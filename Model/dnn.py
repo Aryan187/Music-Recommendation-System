@@ -26,6 +26,6 @@ class DNN(Module):
 		X = self.act3(X)
 		return X
 
-a = [i for i in range(20000)]
-model = DNN(20000)
-print(model.forward(torch.FloatTensor(a)))
+# a = [i for i in range(20000)]
+# model = DNN(20000)
+# print(model.forward(torch.FloatTensor(a)))
