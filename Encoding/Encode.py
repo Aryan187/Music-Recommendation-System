@@ -6,6 +6,9 @@ def onehotenc (enum,data):
 	oh[[enum[k] for k in data if k in enum]] = 1
 	return oh
 
+#songs = dataframe of songs.csv
+#rest = list of unique values
+#outputs dictionary of song_id to encoded vector
 def music_encode(songs,genre,artist,composer,language):
 	metadata = {}
 	norm = max(songs.song_length)
@@ -22,6 +25,10 @@ def music_encode(songs,genre,artist,composer,language):
 		metadata[row.song_id] = np.concatenate((length,gvec,np.concatenate((avec,cvec,lvec))))
 	return metadata
 
+#users = dataframe of members.csv
+#data = dictionary of user_id to array of (pair of song_id and behaviour (source_system_tab column))
+#encoded_music = dictionary of song_id to encoded vector
+#outputs dictionary of user_id to encoded vector
 def user_encode(users,gender,city,age,data,encoded_music):
 	res = {}
 	genum = {k:i for i, k in enumerate(gender)}
@@ -31,10 +38,25 @@ def user_encode(users,gender,city,age,data,encoded_music):
 		gvec = onehotenc(genum,row.gender)
 		avec = onehotenc(aenum,row.bd)
 		cvec = onehotenc(cenum,row.city)
-		svec = np.zeros(len(encoded_music[list(encoded_music)[0]]))
-		for song_id in data[row.msno]:
-			svec = svec + encoded_music[song_id]
+		svec = np.zeros(len(encoded_music[list(encoded_music)[0]])-1)
+		for [song_id,behaviour] in data[row.msno]:
+			svec = svec + (encoded_music[song_id])[1:]
 		res[row.msno] = np.concatenate((gvec,avec,np.concatenate((cvec,svec))))
+	return res
+
+#users = dataframe of members.csv
+#data = dictionary of user_id to array of (pair of song_id and behaviour (source_system_tab column))
+#music_char = dictionary of song_id to music characteristic
+#outputs a dictionary from user_id to vector of vectors
+def user_dynamic_encode(users,data,music_char,behaviour):
+	res = {}
+	benum = {k:i for i, k in enumerate(behaviour)}
+	for index, row in users.iterrows():
+		uvec = []
+		for [song_id,behaviour] in data[row.msno]:
+			rvec = np.concatenate((onehotenc(benum,behaviour),music_char[song_id]))
+			uvec.append(rvec)
+		res[row.msno] = uvec
 	return res
 
 # test = pd.DataFrame({'song_id':['aaa','vvv','ccc','ddd','ttt'],'song_length':[25,20,15,10,5],'genre_ids':[[3],[4],[2],[1],[3]],'artist_name':[['a','c'],['b','c','e'],['d','e'],['a'],['b','e']],'composer':[['a'],['b'],['c'],['d'],['e']],'language':[[1],[2],[5],[4],[4]]})
@@ -49,5 +71,7 @@ def user_encode(users,gender,city,age,data,encoded_music):
 # gender = ['f','m']
 # age = [15,20,25]
 # city = ['l']
-# data = {'a':['ccc','ddd'],'b':['ccc','ttt'],'c':['aaa','vvv','ttt']}
-# print(user_encode(users,gender,city,age,data,encoded_music))	
+# data = {'a':[['ccc','local'],['ddd','playlist']],'b':[['ccc','discover'],['ttt','local']],'c':[['aaa','discover'],['vvv','playlist'],['ttt','local']]}
+# #print(user_encode(users,gender,city,age,data,encoded_music))
+# behaviour = ['local','playlist','discover']
+# print(user_dynamic_encode(users,data,encoded_music,behaviour))  #Not actually encoded_music, just for test
