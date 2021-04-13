@@ -6,6 +6,10 @@ def onehotenc (enum,data):
 	oh[[enum[k] for k in data if k in enum]] = 1
 	return oh
 
+def lonehotenc (enum,data):
+	oh = np.zeros(len(enum))
+	oh[[enum[k] for k in [data] if k in enum]] = 1
+	return oh
 #songs = dataframe of songs.csv
 #rest = list of unique values
 #outputs dictionary of song_id to encoded vector
@@ -17,11 +21,11 @@ def music_encode(songs,genre,artist,composer,language):
 	cenum = {k:i for i, k in enumerate(composer)}
 	lenum = {k:i for i, k in enumerate(language)}
 	for index, row in songs.iterrows():
-		length = [row.song_length/norm]
+		length = [row.song_length/norm]	
 		gvec = onehotenc(genum,row.genre_ids)
 		avec = onehotenc(aenum,row.artist_name)
 		cvec = onehotenc(cenum,row.composer)
-		lvec = onehotenc(lenum,row.language)
+		lvec = lonehotenc(lenum,row.language)
 		metadata[row.song_id] = np.concatenate((length,gvec,np.concatenate((avec,cvec,lvec))))
 	return metadata
 
