@@ -39,9 +39,9 @@ def user_encode(users,gender,city,age,data,encoded_music):
 	aenum = {k:i for i, k in enumerate(age)}
 	cenum = {k:i for i, k in enumerate(city)}
 	for index, row in users.iterrows():
-		gvec = onehotenc(genum,row.gender)
-		avec = onehotenc(aenum,row.bd)
-		cvec = onehotenc(cenum,row.city)
+		gvec = lonehotenc(genum,row.gender)
+		avec = lonehotenc(aenum,row.bd)
+		cvec = lonehotenc(cenum,row.city)
 		svec = np.zeros(len(encoded_music[list(encoded_music)[0]])-1)
 		for [song_id,behaviour] in data[row.msno]:
 			svec = svec + (encoded_music[song_id])[1:]
