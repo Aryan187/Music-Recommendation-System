@@ -15,7 +15,7 @@ def music_encode(songs,genre,artist,composer,language):
 	genum = {k:i for i, k in enumerate(genre)}
 	aenum = {k:i for i, k in enumerate(artist)}
 	cenum = {k:i for i, k in enumerate(composer)}
-	lenum = {k:i for i, k in enumerate(genre)}
+	lenum = {k:i for i, k in enumerate(language)}
 	for index, row in songs.iterrows():
 		length = [row.song_length/norm]
 		gvec = onehotenc(genum,row.genre_ids)
