@@ -5,7 +5,9 @@ import csv
 from Encoding.Encode import music_encode, user_encode, user_dynamic_encode
 from DataCleaning.Creating_unique_list import unique_artists, unique_composers, unique_genre, unique_language, unique_user_features
 from Model.dnn import DNN
-
+###rac add
+from Model.rnn import RNN
+#####
 def build_dict (train,songs):
 	user_songs={}
 	for index, row in train.iterrows():
@@ -44,3 +46,29 @@ user_int_char = {}
 for user in users.msno:
 	user_int_char[user] = model2.forward(torch.FloatTensor(encoded_user_intrinsic[user]))
 print("User Instrinsic passed through DNN")
+
+
+###########rachit add##############
+data={}
+### transforming data from train.csv in form of dic- key(user_id):val(list of (song,behaviour))
+for i in train.index:
+    if train['msno'][i] not in data:
+        data[train['msno'][i]]=[]
+    data[train['msno'][i]].append((train['song_id'][i],train['source_system_tab'][i]))
+###
+### unique list of behaviours 
+behaviour=train['source_system_tab'].tolist()
+behaviour=np.unique(np.array(behaviour))
+behaviour=behaviour.tolist()
+###
+encoded_user_dynamic=user_dynamic_encode(users,data,music_char,behaviour)
+print("User dynamic Encoding Done")
+modelRNN=RNN(9+32,2,256,32)
+###RNN model -  num_in, num_layers, num_hidden, num_out
+modelRNN=modelRNN.double() ### takes input in double not float
+###
+user_dyn_char = {}
+for user in users.msno:
+    user_dyn_char[user] = modelRNN.forward((torch.tensor(encoded_user_dynamic[user]).unsqueeze(1)).double()) + modelRNN.forward((torch.tensor(encoded_user_dynamic[user][-20:]).unsqueeze(1)).double())
+print("User dynamic passed through RNN")
+###########################################
