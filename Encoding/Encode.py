@@ -58,7 +58,7 @@ def user_dynamic_encode(users,data,music_char,behaviour):
 	for index, row in users.iterrows():
 		uvec = []
 		for [song_id,behaviour] in data[row.msno]:
-			rvec = np.concatenate((onehotenc(benum,behaviour),music_char[song_id]))
+			rvec = np.concatenate((lonehotenc(benum,behaviour),music_char[song_id]))
 			uvec.append(rvec)
 		res[row.msno] = uvec
 	return res
