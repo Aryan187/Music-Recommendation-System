@@ -69,6 +69,6 @@ modelRNN=modelRNN.double() ### takes input in double not float
 ###
 user_dyn_char = {}
 for user in users.msno:
-    user_dyn_char[user] = modelRNN.forward((torch.tensor(encoded_user_dynamic[user][-10:]).unsqueeze(1)).double()) + modelRNN.forward((torch.tensor(encoded_user_dynamic[user][-20:]).unsqueeze(1)).double())
+	user_dyn_char[user] = modelRNN.forward((torch.tensor(encoded_user_dynamic[user][-10:]).unsqueeze(1)).double()) + modelRNN.forward((torch.tensor(encoded_user_dynamic[user][-20:]).unsqueeze(1)).double())
 print("User dynamic passed through RNN")
 ###########################################
