@@ -9,13 +9,13 @@ class DNN(Module):
 		super(DNN,self).__init__()
 		self.hidden1 = Linear(n,512)
 		self.act1 = ReLU()
-		kaiming_uniform_(self.hidden1.weight,nonlinearity='relu')
+		#kaiming_uniform_(self.hidden1.weight,nonlinearity='relu')
 		self.hidden2 = Linear(512,64)
 		self.act2 = ReLU()
-		kaiming_uniform_(self.hidden2.weight,nonlinearity='relu')
+		#kaiming_uniform_(self.hidden2.weight,nonlinearity='relu')
 		self.output = Linear(64,32)
 		self.act3 = ReLU()
-		kaiming_uniform_(self.output.weight,nonlinearity='relu')
+		#kaiming_uniform_(self.output.weight,nonlinearity='relu')
 
 	def forward(self,X):
 		X = self.hidden1(X)
