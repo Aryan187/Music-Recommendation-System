@@ -84,7 +84,7 @@ for b in behaviour:
 # 	user_dyn_char[user] = modelRNN.forward(user_st) + modelRNN.forward(user_lt)
 # print("User dynamic passed through RNN")
 ###########################################
-train_set = MRSDataset(train_points,data,users,songs,encoded_user_intrinsic,encoded_music,behaviour_enc,4,10)
+train_set = MRSDataset(train_points,data,users,songs,encoded_user_intrinsic,encoded_music,behaviour_enc,4,10,train['target'].tolist())
 train_dl = DataLoader(train_set, batch_size=16, shuffle=True,collate_fn=lambda x: x)
 model = DTNMR(9972,9939,9,st_playlist_len=5,emb_size=32)
 optimizer = torch.optim.SGD(model.parameters(), lr=0.1)

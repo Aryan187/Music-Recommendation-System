@@ -10,7 +10,7 @@ class MRSDataset(Dataset):
     """
 
     def __init__(self, user_song, playlist, users, songs, user_enc, song_enc, behavior_enc,
-        subset_size, Lt_playlist_len):
+        subset_size, Lt_playlist_len, targets):
         self.user_song = user_song
         self.playlist = playlist
         self.users = users
@@ -21,6 +21,7 @@ class MRSDataset(Dataset):
         self.behavior_enc = behavior_enc
         self.subset_size = subset_size
         self.Lt_playlist_len = Lt_playlist_len
+        self.targets = targets
 
     def __getitem__(self, index):
         """
@@ -68,7 +69,7 @@ class MRSDataset(Dataset):
 
         label = self.encode_song(label_id)
 
-        return user, playlist_Lt, behaviors_Lt, [label] + subset
+        return user, playlist_Lt, behaviors_Lt, [label] + subset, self.targets[index]
         #return user, playlist_Lt, behaviors_Lt, self.encode_song
 
     def encode_user(self, user_id, playlist):

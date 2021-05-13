@@ -29,17 +29,21 @@ class DTNMRWrapper:
         losses, accuracies = [], []
         for i, x in (t := tqdm(enumerate(self.train_dl), total=len(self.train_dl))):
             #y = torch.zeros((np.array(x[0]).shape[0],1), dtype=torch.long) #? add , 1) if necessary
-            y = torch.zeros((1,1), dtype = torch.long)
+            #y = torch.zeros((1,1), dtype = torch.long)
+            #print(x[0][-1])
+            y = (torch.LongTensor(np.array([x[0][-1]]))).resize_(1,1)
             y_hat = self.model(*x[0])
-
+            #print(y_hat)
             self.optimizer.zero_grad()
-            print(y)
             loss = self.criterion(y_hat, y)
             loss.backward()
             self.optimizer.step()
 
             loss = loss.item()
-            accuracy = (torch.argmax(y_hat, dim=1) == 0).float().mean().item()
+            if (x[0][-1] == 1):
+                accuracy = (torch.argmax(y_hat, dim=1) == 0).float().mean().item()
+            else:
+                accuracy = (torch.argmax(y_hat, dim=1) != 0).float().mean().item()
             losses.append(loss)
             accuracies.append(accuracy)
             t.set_description("loss %.2f - accuracy %.2f%%" % (loss, accuracy*100))
@@ -72,7 +76,7 @@ class DTNMR(Module):
         self.UDFC = RNN(self.song_emb_size, num_layers=2, num_hidden=256, num_out=emb_size)
         self.RC = Linear(2*emb_size, 1)
 
-    def forward(self, user, playlist, behaviors, subset):
+    def forward(self, user, playlist, behaviors, subset, target):
         """
         The forward pass of the model is the calculation of the rating between the user and
         each song in the subset. The result is the list [Score(u, s) for s in subset].
