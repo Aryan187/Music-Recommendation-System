@@ -26,6 +26,7 @@ def build_dict (train,songs,users):
 songs = pd.read_csv('DataCleaning/final_songs.csv')
 users = pd.read_csv('DataCleaning/final_users.csv')
 train = pd.read_csv('DataCleaning/final_train.csv')
+test = pd.read_csv('DataCleaning/final_test.csv')
 #dict_file = pd.read_csv('DataCleaning/user_song_behaviour_dict.csv')
 train['source_system_tab'].fillna('none', inplace=True)
 usb_dict, train_points = build_dict(train,songs,users)
@@ -90,4 +91,4 @@ model = DTNMR(9972,9939,9,st_playlist_len=5,emb_size=32)
 optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
 system = DTNMRWrapper(model,train_dl,train_dl,optimizer)
 
-system.train(epochs=1)
+system.train(epochs=2)

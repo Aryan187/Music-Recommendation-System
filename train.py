@@ -5,6 +5,9 @@ import torch.nn as nn
 import numpy as np
 from torch.nn import Module, Linear
 from tqdm import tqdm
+from sklearn.metrics import precision_score
+from sklearn.metrics import recall_score
+from sklearn.metrics import f1_score
 
 from Model.dnn import DNN
 from Model.rnn import RNN
@@ -21,12 +24,17 @@ class DTNMRWrapper:
     def train(self, epochs):
         for epoch in range(epochs):
             print('Epoch %i/%i' % (epoch+1, epochs))
-            losses, accuracies = self.train_epoch()
+            losses, accuracies, y_pred, y_true = self.train_epoch()
             print('summary of epoch: average loss={:.2f}, average accuracy={:.2f}' \
                 .format(mean(losses), mean(accuracies)))
+            print("Precision:",precision_score(y_true,y_pred))
+            print("Recall:",recall_score(y_true,y_pred))
+            print("F1 Score:",f1_score(y_true,y_pred))
 
     def train_epoch(self):
         losses, accuracies = [], []
+        y_pred = []
+        y_true = []
         for i, x in (t := tqdm(enumerate(self.train_dl), total=len(self.train_dl))):
             #y = torch.zeros((np.array(x[0]).shape[0],1), dtype=torch.long) #? add , 1) if necessary
             #y = torch.zeros((1,1), dtype = torch.long)
@@ -38,7 +46,8 @@ class DTNMRWrapper:
             loss = self.criterion(y_hat, y)
             loss.backward()
             self.optimizer.step()
-
+            y_pred.append((torch.argmax(y_hat, dim=1) == 0))
+            y_true.append(x[0][-1])
             loss = loss.item()
             if (x[0][-1] == 1):
                 accuracy = (torch.argmax(y_hat, dim=1) == 0).float().mean().item()
@@ -46,8 +55,8 @@ class DTNMRWrapper:
                 accuracy = (torch.argmax(y_hat, dim=1) != 0).float().mean().item()
             losses.append(loss)
             accuracies.append(accuracy)
-            t.set_description("loss %.2f - accuracy %.2f%%" % (loss, accuracy*100))
-        return losses, accuracies
+            #t.set_description("loss %.2f - accuracy %.2f%%" % (loss, accuracy*100))
+        return losses, accuracies, y_pred, y_true
 
 
 class DTNMR(Module):
